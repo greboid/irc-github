@@ -1,21 +1,17 @@
 package main
 
 import (
-	"context"
 	"crypto/hmac"
 	"crypto/sha1"
 	"crypto/subtle"
-	"crypto/tls"
 	"encoding/hex"
 	"flag"
 	"fmt"
 	"github.com/greboid/irc/v2/logger"
+	"github.com/greboid/irc/v2/plugins"
 	"github.com/greboid/irc/v2/rpc"
 	"github.com/kouhin/envflag"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"io"
 	"net/http"
 	"strings"
 )
@@ -29,6 +25,7 @@ var (
 	HidePrivate    = flag.Bool("hide-private", false, "Hide notifications about private repos")
 	GithubSecret   = flag.String("github-secret", "", "Github secret for validating webhooks")
 	Debug          = flag.Bool("debug", false, "Show debugging info")
+	log            = logger.CreateLogger(*Debug)
 )
 
 type github struct {
@@ -37,63 +34,26 @@ type github struct {
 }
 
 func main() {
-	log := logger.CreateLogger(*Debug)
 	if err := envflag.Parse(); err != nil {
 		log.Fatalf("Unable to load config: %s", err.Error())
+		return
 	}
-	github := github{
+	helper, err := plugins.NewHelper(*RPCHost, uint16(*RPCPort), *RPCToken)
+	if err != nil {
+		log.Fatalf("Unable to create plugin helper: %s", err.Error())
+		return
+	}
+	err = helper.RegisterWebhook("github", handleGithub)
+	if err != nil {
+		log.Fatalf("Error registering webhook: %s", err.Error())
+	}
+	log.Infof("Exiting")
+}
+
+func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
+	g := github{
 		log: log,
 	}
-	log.Infof("Creating Github RPC Client")
-	client, err := github.doRPC()
-	if err != nil {
-		log.Fatalf("Unable to create RPC Client: %s", err.Error())
-	}
-	github.client = client
-	log.Infof("Starting github web server")
-	err = github.doWeb()
-	if err != nil {
-		log.Panicf("Error handling web: %s", err.Error())
-	}
-	log.Infof("exiting")
-}
-
-func (g *github) doRPC() (rpc.IRCPluginClient, error) {
-	creds := credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})
-	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", *RPCHost, *RPCPort), grpc.WithTransportCredentials(creds))
-	client := rpc.NewIRCPluginClient(conn)
-	_, err = client.Ping(rpc.CtxWithToken(context.Background(), "bearer", *RPCToken), &rpc.Empty{})
-	if err != nil {
-		return nil, err
-	}
-	return client, nil
-}
-
-func (g *github) doWeb() error {
-	creds := credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})
-	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", *RPCHost, *RPCPort), grpc.WithTransportCredentials(creds))
-	if err != nil {
-		return err
-	}
-	client := rpc.NewHTTPPluginClient(conn)
-	stream, err := client.GetRequest(rpc.CtxWithTokenAndPath(context.Background(), "bearer", *RPCToken, "github"))
-	for {
-		request, err := stream.Recv()
-		if err == io.EOF {
-			return nil
-		}
-		if err != nil {
-			return nil
-		}
-		response := g.handleGithub(request)
-		err = stream.Send(response)
-		if err != nil {
-			return err
-		}
-	}
-}
-
-func (g *github) handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 	headers := rpc.ConvertFromRPCHeaders(request.Header)
 	eventType := headers.Get("X-GitHub-Event")
 	header := strings.SplitN(headers.Get("X-Hub-Signature"), "=", 2)
