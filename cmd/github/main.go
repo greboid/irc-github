@@ -26,6 +26,7 @@ var (
 	GithubSecret   = flag.String("github-secret", "", "Github secret for validating webhooks")
 	Debug          = flag.Bool("debug", false, "Show debugging info")
 	log            = logger.CreateLogger(*Debug)
+	helper         plugins.PluginHelper
 )
 
 type github struct {
@@ -34,11 +35,13 @@ type github struct {
 }
 
 func main() {
-	if err := envflag.Parse(); err != nil {
+	log.Infof("Starting github plugin")
+	err := envflag.Parse()
+	if err != nil {
 		log.Fatalf("Unable to load config: %s", err.Error())
 		return
 	}
-	helper, err := plugins.NewHelper(*RPCHost, uint16(*RPCPort), *RPCToken)
+	helper, err = plugins.NewHelper(*RPCHost, uint16(*RPCPort), *RPCToken)
 	if err != nil {
 		log.Fatalf("Unable to create plugin helper: %s", err.Error())
 		return
@@ -76,9 +79,7 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 	}
 	go func() {
 		log.Infof("Received github notification: %s", eventType)
-		webhookHandler := githubWebhookHandler{
-			client: g.client,
-		}
+		webhookHandler := githubWebhookHandler{}
 		err := webhookHandler.handleWebhook(eventType, request.Body)
 		if err != nil {
 			g.log.Errorf("Unable to handle webhook: %s", err.Error())
