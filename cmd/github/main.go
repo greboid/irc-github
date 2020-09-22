@@ -74,6 +74,7 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 		}
 	}
 	go func() {
+		log.Infof("Received github notification: %s", eventType)
 		webhookHandler := githubWebhookHandler{
 			client: g.client,
 		}
