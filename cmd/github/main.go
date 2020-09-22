@@ -46,6 +46,7 @@ func main() {
 	err = helper.RegisterWebhook("github", handleGithub)
 	if err != nil {
 		log.Fatalf("Error registering webhook: %s", err.Error())
+		return
 	}
 	log.Infof("Exiting")
 }
