@@ -7,9 +7,9 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
-	"github.com/greboid/irc/v2/logger"
-	"github.com/greboid/irc/v2/plugins"
-	"github.com/greboid/irc/v2/rpc"
+	"github.com/greboid/irc/v3/logger"
+	"github.com/greboid/irc/v3/plugins"
+	"github.com/greboid/irc/v3/rpc"
 	"github.com/kouhin/envflag"
 	"go.uber.org/zap"
 	"net/http"
@@ -26,7 +26,7 @@ var (
 	GithubSecret   = flag.String("github-secret", "", "Github secret for validating webhooks")
 	Debug          = flag.Bool("debug", false, "Show debugging info")
 	log            = logger.CreateLogger(*Debug)
-	helper         plugins.PluginHelper
+	helper         *plugins.PluginHelper
 )
 
 type github struct {
@@ -41,7 +41,7 @@ func main() {
 		log.Fatalf("Unable to load config: %s", err.Error())
 		return
 	}
-	helper, err = plugins.NewHelper(*RPCHost, uint16(*RPCPort), *RPCToken)
+	helper, err = plugins.NewHelper(fmt.Sprintf("%s:%d", *RPCHost, uint16(*RPCPort)), *RPCToken)
 	if err != nil {
 		log.Fatalf("Unable to create plugin helper: %s", err.Error())
 		return
