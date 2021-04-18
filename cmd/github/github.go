@@ -2,6 +2,7 @@ package main
 
 //ping events
 type pinghook struct {
+    Repository  Repository `json:"repository"`
 }
 
 //Push events

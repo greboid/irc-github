@@ -21,6 +21,17 @@ func Test_githubWebhookHandler_handleWebhook(t *testing.T) {
 		finished chan bool
 	}{
 		{
+			name:     "valid ping",
+			finished: make(chan bool, 1),
+			client:   &mockIRCPluginClient{},
+			args: args{
+				eventType: "ping",
+				filename:  "ping.json",
+			},
+			err:    false,
+			output: 0,
+		},
+		{
 			name:     "valid push",
 			finished: make(chan bool, 1),
 			client:   &mockIRCPluginClient{},
