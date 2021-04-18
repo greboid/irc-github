@@ -22,7 +22,7 @@ Once configured the URL to configure in github would be <Bot URL>/github
 ---
 version: "3.5"
 service:
-  goplum:
+  bot-github:
     image: greboid/irc-github
     environment:
       RPC_HOST: bot
