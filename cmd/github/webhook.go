@@ -5,7 +5,12 @@ import (
 	"fmt"
 )
 
+type messageSender interface {
+	SendChannelMessage(channel string, messages... string) error
+}
+
 type githubWebhookHandler struct {
+	sender messageSender
 }
 
 func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte) error {
@@ -108,6 +113,5 @@ func (g *githubWebhookHandler) sendMessage(isPrivate bool, messages ...string) e
 	if isPrivate && len(*PrivateChannel) != 0 {
 		notifyChannel = *PrivateChannel
 	}
-	errors := helper.SendChannelMessage(notifyChannel, messages...)
-	return errors
+	return g.sender.SendChannelMessage(notifyChannel, messages...)
 }
