@@ -7,13 +7,14 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/greboid/irc-bot/v4/plugins"
 	"github.com/greboid/irc-bot/v4/rpc"
 	"github.com/greboid/irc/v4/logger"
 	"github.com/kouhin/envflag"
 	"go.uber.org/zap"
-	"net/http"
-	"strings"
 )
 
 var (
@@ -79,7 +80,9 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 	}
 	go func() {
 		log.Infof("Received github notification: %s", eventType)
-		webhookHandler := githubWebhookHandler{}
+		webhookHandler := githubWebhookHandler{
+			sender: helper,
+		}
 		err := webhookHandler.handleWebhook(eventType, request.Body)
 		if err != nil {
 			g.log.Errorf("Unable to handle webhook: %s", err.Error())

@@ -29,7 +29,7 @@ func Test_githubWebhookHandler_handleWebhook(t *testing.T) {
 				filename:  "ping.json",
 			},
 			err:    false,
-			output: 0,
+			output: 1,
 		},
 		{
 			name:     "valid push",
@@ -40,7 +40,7 @@ func Test_githubWebhookHandler_handleWebhook(t *testing.T) {
 				filename:  "push/basic.json",
 			},
 			err:    false,
-			output: 2,
+			output: 1,
 		},
 		{
 			name:   "error push",
@@ -119,7 +119,9 @@ func Test_githubWebhookHandler_handleWebhook(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.client.finished = tt.finished
-			g := &githubWebhookHandler{}
+			g := &githubWebhookHandler{
+				sender: tt.client,
+			}
 			var bodyBytes []byte
 			if tt.args.filename != "" {
 				bodyBytes, _ = getTestDataBytes(tt.args.filename)
@@ -149,24 +151,26 @@ func Test_githubWebhookHandler_sendMessage(t *testing.T) {
 		name     string
 		client   *mockFailingIRCPluginClient
 		messages []string
-		wanted   []error
+		wanted   error
 	}{
 		{
 			name:     "Check working",
 			client:   &mockFailingIRCPluginClient{err: false},
 			messages: []string{"test"},
-			wanted:   []error{},
+			wanted:   nil,
 		},
 		{
 			name:     "Check Failing",
 			client:   &mockFailingIRCPluginClient{err: true},
 			messages: []string{"test"},
-			wanted:   []error{errors.New("fake error")},
+			wanted:   errors.New("fake error"),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &githubWebhookHandler{}
+			g := &githubWebhookHandler{
+				sender: tt.client,
+			}
 			got := g.sendMessage(false, tt.messages...)
 			if !reflect.DeepEqual(got, tt.wanted) {
 				t.Errorf("sendMessage() sent = %v, wanted %v", got, tt.wanted)
