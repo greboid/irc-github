@@ -1,20 +1,15 @@
 package main
 
 import (
-	"crypto/hmac"
-	"crypto/sha1"
-	"crypto/subtle"
-	"encoding/hex"
 	"flag"
 	"fmt"
-	"net/http"
-	"strings"
-
+	webhook "github.com/go-playground/webhooks/v6/github"
 	"github.com/greboid/irc-bot/v4/plugins"
 	"github.com/greboid/irc-bot/v4/rpc"
 	"github.com/greboid/irc/v4/logger"
 	"github.com/kouhin/envflag"
 	"go.uber.org/zap"
+	"net/http"
 )
 
 var (
@@ -59,45 +54,40 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 	g := github{
 		log: log,
 	}
-	headers := rpc.ConvertFromRPCHeaders(request.Header)
-	eventType := headers.Get("X-GitHub-Event")
-	header := strings.SplitN(headers.Get("X-Hub-Signature"), "=", 2)
-	if header[0] != "sha1" {
-		g.log.Debugf("Error: %s", "Bad header")
+	hook, err := webhook.New(webhook.Options.Secret(*GithubSecret))
+	if err != nil {
+		g.log.Debugf("Error: %s", "not able to create webhook")
+		return getError(http.StatusInternalServerError, "not able to create webhook: " + err.Error())
+	}
+	payload, err := hook.Parse(rpc.ConvertRPCToHTTP(request),
+		webhook.PingEvent,
+		webhook.IssuesEvent, webhook.IssueCommentEvent,
+		webhook.PullRequestEvent,
+		webhook.PushEvent,
+	)
+	if err != nil {
+		if err == webhook.ErrEventNotFound {
+			return getError(http.StatusUnprocessableEntity, "Unknown event type")
+		}
+		return getError(http.StatusInternalServerError, "not able to create webhook: " + err.Error())
+	}
+	gh := githubWebhookHandler{
+		sender: helper,
+	}
+	private, messages := gh.handleWebhook(payload)
+	err = gh.sendMessage(private, messages...)
+	if err != nil {
+		g.log.Errorf("Unable to send messages: %s", err.Error())
 		return &rpc.HttpResponse{
 			Header: nil,
-			Body:   []byte("Bad headers"),
+			Body:   []byte("Error delivering message"),
 			Status: http.StatusInternalServerError,
 		}
-	}
-	if !CheckGithubSecret(request.Body, header[1], *GithubSecret) {
-		g.log.Debugf("Error: %s", "Bad hash")
+	} else {
 		return &rpc.HttpResponse{
 			Header: nil,
-			Body:   []byte("Bad hash"),
-			Status: http.StatusBadRequest,
+			Body:   []byte("Delivered"),
+			Status: http.StatusOK,
 		}
 	}
-	go func() {
-		log.Infof("Received github notification: %s", eventType)
-		webhookHandler := githubWebhookHandler{
-			sender: helper,
-		}
-		err := webhookHandler.handleWebhook(eventType, request.Body)
-		if err != nil {
-			g.log.Errorf("Unable to handle webhook: %s", err.Error())
-		}
-	}()
-	return &rpc.HttpResponse{
-		Header: nil,
-		Body:   []byte("Delivered"),
-		Status: http.StatusOK,
-	}
-}
-
-func CheckGithubSecret(bodyBytes []byte, headerSecret string, githubSecret string) bool {
-	h := hmac.New(sha1.New, []byte(githubSecret))
-	h.Write(bodyBytes)
-	expected := fmt.Sprintf("%s", hex.EncodeToString(h.Sum(nil)))
-	return len(expected) == len(headerSecret) && subtle.ConstantTimeCompare([]byte(expected), []byte(headerSecret)) == 1
 }
