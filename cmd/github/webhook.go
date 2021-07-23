@@ -116,7 +116,6 @@ func (g *githubWebhookHandler) sendMessage(isPrivate bool, messages ...string) e
 	sender := g.hookSender
 	for _, ignoredSender := range g.ignoredSenders {
 		if sender == ignoredSender {
-			log.Errorf("Ignored sender")
 			return nil
 		}
 	}
