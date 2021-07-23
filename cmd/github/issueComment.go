@@ -18,7 +18,7 @@ func (g *githubIssueCommenthandler) handleIssueCommentCreated(data issuehook) (m
 	messages = append(messages, fmt.Sprintf(
 		"[%s] %s commented on issue %s - %s",
 		data.Repository.FullName,
-		data.User.Login,
+		data.Sender.Login,
 		data.Issue.Title,
 		data.Issue.HtmlURL,
 	))

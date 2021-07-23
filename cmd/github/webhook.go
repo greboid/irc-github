@@ -6,11 +6,13 @@ import (
 )
 
 type messageSender interface {
-	SendChannelMessage(channel string, messages... string) error
+	SendChannelMessage(channel string, messages ...string) error
 }
 
 type githubWebhookHandler struct {
-	sender messageSender
+	sender         messageSender
+	hookSender     string
+	ignoredSenders []string
 }
 
 func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte) error {
@@ -20,6 +22,7 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 		err := json.Unmarshal(bodyBytes, &data)
 		if err == nil {
 			go func() {
+				g.hookSender = data.Sender.Login
 				err := g.sendMessage(data.Repository.IsPrivate, fmt.Sprintf("Ping received for %s", data.Repository.FullName))
 				if err != nil {
 					log.Errorf("Error handling ping: %s", err.Error())
@@ -35,6 +38,7 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 		err := json.Unmarshal(bodyBytes, &data)
 		if err == nil {
 			go func() {
+				g.hookSender = data.Sender.Login
 				err := g.sendMessage(data.Repository.IsPrivate, handler.handlePushEvent(data)...)
 				if err != nil {
 					log.Errorf("Error handling push: %s", err.Error())
@@ -50,6 +54,7 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 		err := json.Unmarshal(bodyBytes, &data)
 		if err == nil {
 			go func() {
+				g.hookSender = data.Sender.Login
 				err := g.sendMessage(data.Repository.IsPrivate, handler.handlePREvent(data)...)
 				if err != nil {
 					log.Errorf("Error handling push: %s", err.Error())
@@ -65,6 +70,7 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 		err := json.Unmarshal(bodyBytes, &data)
 		if err == nil {
 			go func() {
+				g.hookSender = data.Sender.Login
 				err := g.sendMessage(data.Repository.IsPrivate, handler.handleIssueEvent(data)...)
 				if err != nil {
 					log.Errorf("Error handling push: %s", err.Error())
@@ -80,6 +86,7 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 		err := json.Unmarshal(bodyBytes, &data)
 		if err == nil {
 			go func() {
+				g.hookSender = data.Sender.Login
 				err := g.sendMessage(data.Repository.IsPrivate, handler.handleIssueCommentEvent(data)...)
 				if err != nil {
 					log.Errorf("Error handling push: %s", err.Error())
@@ -106,6 +113,13 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 }
 
 func (g *githubWebhookHandler) sendMessage(isPrivate bool, messages ...string) error {
+	sender := g.hookSender
+	for _, ignoredSender := range g.ignoredSenders {
+		if sender == ignoredSender {
+			log.Errorf("Ignored sender")
+			return nil
+		}
+	}
 	notifyChannel := *Channel
 	if isPrivate && *HidePrivate {
 		return nil

@@ -2,7 +2,8 @@ package main
 
 //ping events
 type pinghook struct {
-    Repository  Repository `json:"repository"`
+	Repository Repository `json:"repository"`
+	Sender     Sender     `json:"sender"`
 }
 
 //Push events
@@ -49,6 +50,7 @@ type prhook struct {
 	Action      string      `json:"action"`
 	PullRequest PullRequest `json:"pull_request"`
 	Repository  Repository  `json:"repository"`
+	Sender      Sender      `json:"sender"`
 }
 
 type PullRequest struct {
@@ -60,6 +62,7 @@ type PullRequest struct {
 	User     User   `json:"user"`
 	Merged   string `json:"merged_at"`
 	MergedBy User   `json:"merged_by"`
+	Sender   Sender `json:"sender"`
 }
 
 type User struct {
@@ -71,7 +74,7 @@ type issuehook struct {
 	Action     string     `json:"action"`
 	Issue      Issue      `json:"issue"`
 	Repository Repository `json:"repository"`
-	User       User       `json:"sender"`
+	Sender     User       `json:"sender"`
 }
 
 type Issue struct {

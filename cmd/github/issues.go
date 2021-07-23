@@ -18,7 +18,7 @@ func (g *githubissuehandler) handleIssueOpened(data issuehook) (messages []strin
 	messages = append(messages, fmt.Sprintf(
 		"[%s] %s create issue: %s -  %s",
 		data.Repository.FullName,
-		data.User.Login,
+		data.Sender.Login,
 		data.Issue.Title,
 		data.Issue.HtmlURL,
 	))
@@ -29,7 +29,7 @@ func (g *githubissuehandler) handleIssueClosed(data issuehook) (messages []strin
 	messages = append(messages, fmt.Sprintf(
 		"[%s] %s closed issue %s - %s",
 		data.Repository.FullName,
-		data.User.Login,
+		data.Sender.Login,
 		data.Issue.Title,
 		data.Issue.HtmlURL,
 	))

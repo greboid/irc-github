@@ -26,6 +26,7 @@ var (
 	HidePrivate    = flag.Bool("hide-private", false, "Hide notifications about private repos")
 	GithubSecret   = flag.String("github-secret", "", "Github secret for validating webhooks")
 	Debug          = flag.Bool("debug", false, "Show debugging info")
+	IgnoredUsers   = flag.String("ignored-users", "", "Comma separated list of users to ignore")
 	log            = logger.CreateLogger(*Debug)
 	helper         *plugins.PluginHelper
 )
@@ -82,6 +83,7 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 		log.Infof("Received github notification: %s", eventType)
 		webhookHandler := githubWebhookHandler{
 			sender: helper,
+			ignoredSenders: parseIgnoredUsers(*IgnoredUsers),
 		}
 		err := webhookHandler.handleWebhook(eventType, request.Body)
 		if err != nil {
@@ -100,4 +102,16 @@ func CheckGithubSecret(bodyBytes []byte, headerSecret string, githubSecret strin
 	h.Write(bodyBytes)
 	expected := fmt.Sprintf("%s", hex.EncodeToString(h.Sum(nil)))
 	return len(expected) == len(headerSecret) && subtle.ConstantTimeCompare([]byte(expected), []byte(headerSecret)) == 1
+}
+
+func parseIgnoredUsers(users string) []string {
+	ignoredUsers := make([]string, 0)
+	splitUsers := strings.Split(users, ",")
+	for _, user := range splitUsers {
+		trimmedUser := strings.TrimSpace(user)
+		if trimmedUser != "" {
+			ignoredUsers = append(ignoredUsers, trimmedUser)
+		}
+	}
+	return ignoredUsers
 }
