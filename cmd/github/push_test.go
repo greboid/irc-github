@@ -60,7 +60,7 @@ func Test_github_tidyPushRefspecs(t *testing.T) {
 }
 
 func Test_github_handlePushEvent(t *testing.T) {
-	tests := []string{"push/basic.json", "push/tag.json"}
+	tests := []string{"push/basic.json", "push/tag.json", "push/branch.json"}
 	gold := goldie.New(t)
 	for index := range tests {
 		t.Run(tests[index], func(t *testing.T) {
