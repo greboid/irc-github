@@ -7,7 +7,7 @@ import (
 
 type githubPushHandler struct{}
 
-func (g *githubPushHandler) tidyPushRefspecs(data *pushhook) {
+func (g *githubPushHandler) tidyPushRefspecs(data *webhook) {
 	data.Refspec = g.tidyRefsHeads(data.Refspec)
 	data.Refspec = g.tidyRefsTags(data.Refspec)
 	data.Baserefspec = g.tidyRefsHeads(data.Baserefspec)
@@ -28,7 +28,7 @@ func (g *githubPushHandler) tidyRefsTags(input string) string {
 	return input
 }
 
-func (g *githubPushHandler) handlePushEvent(data pushhook) (messages []string) {
+func (g *githubPushHandler) handlePushEvent(data webhook) (messages []string) {
 	g.tidyPushRefspecs(&data)
 	if data.Created {
 		return g.handleCreate(data)
@@ -39,7 +39,7 @@ func (g *githubPushHandler) handlePushEvent(data pushhook) (messages []string) {
 	}
 }
 
-func (g *githubPushHandler) handleDelete(data pushhook) (messages []string) {
+func (g *githubPushHandler) handleDelete(data webhook) (messages []string) {
 	messages = append(messages, fmt.Sprintf(
 		"[%s] %s deleted %s",
 		data.Repository.FullName,
@@ -49,7 +49,7 @@ func (g *githubPushHandler) handleDelete(data pushhook) (messages []string) {
 	return
 }
 
-func (g *githubPushHandler) handleCreate(data pushhook) (messages []string) {
+func (g *githubPushHandler) handleCreate(data webhook) (messages []string) {
 	if data.Baserefspec == "" {
 		messages = append(messages, fmt.Sprintf(
 			"[%s] %s created %s - %s",
@@ -71,7 +71,7 @@ func (g *githubPushHandler) handleCreate(data pushhook) (messages []string) {
 	return
 }
 
-func (g *githubPushHandler) handleCommit(data pushhook) (messages []string) {
+func (g *githubPushHandler) handleCommit(data webhook) (messages []string) {
 	messages = append(messages, fmt.Sprintf(
 		"[%s] %s pushed %d commits to %s - %s",
 		data.Repository.FullName,

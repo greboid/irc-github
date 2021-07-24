@@ -8,7 +8,7 @@ import (
 
 func Test_githubissuehandler_handIssueEvent_open(t *testing.T) {
 	g := &githubissuehandler{}
-	hook := issuehook{}
+	hook := webhook{}
 	err := getTestData("issues/create_1.json", &hook)
 	if err != nil {
 		t.Fatal("Unable to parse example data")
@@ -21,7 +21,7 @@ func Test_githubissuehandler_handIssueEvent_open(t *testing.T) {
 
 func Test_githubissuehandler_handIssueEvent_closed(t *testing.T) {
 	g := &githubissuehandler{}
-	hook := issuehook{}
+	hook := webhook{}
 	err := getTestData("issues/closed_1.json", &hook)
 	if err != nil {
 		t.Fatal("Unable to parse example data")
@@ -34,7 +34,7 @@ func Test_githubissuehandler_handIssueEvent_closed(t *testing.T) {
 
 func Test_githubissuehandler_handIssueEvent_unknown(t *testing.T) {
 	g := &githubissuehandler{}
-	hook := issuehook{}
+	hook := webhook{}
 	hook.Action = "ThisWillError"
 	messages := g.handleIssueEvent(hook)
 	if len(messages) != 0 {
@@ -48,7 +48,7 @@ func Test_githubissuehandler_handleIssueOpened(t *testing.T) {
 	for index := range tests {
 		t.Run(tests[index], func(t *testing.T) {
 			g := &githubissuehandler{}
-			hook := issuehook{}
+			hook := webhook{}
 			err := getTestData(tests[index], &hook)
 			if err != nil {
 				t.Fatal("Unable to parse example data")
@@ -66,7 +66,7 @@ func Test_githubissuehandler_handleIssueClosed(t *testing.T) {
 	for index := range tests {
 		t.Run(tests[index], func(t *testing.T) {
 			g := &githubissuehandler{}
-			hook := issuehook{}
+			hook := webhook{}
 			err := getTestData(tests[index], &hook)
 			if err != nil {
 				t.Fatal("Unable to parse example data")

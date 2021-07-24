@@ -64,7 +64,7 @@ func Test_parseIgnoredUsers(t *testing.T) {
 		},
 		{
 			name:             "Multiple users",
-			inputUsers:       "user1,user1",
+			inputUsers:       "user1,user2",
 			wantIgnoredUsers: []string{"user1", "user2"},
 		},
 		{

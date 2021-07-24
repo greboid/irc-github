@@ -1,32 +1,25 @@
 package main
 
-//ping events
-type pinghook struct {
+//hook data
+type webhook struct {
+	Action      string      `json:"action"`
 	Repository Repository `json:"repository"`
+	PullRequest PullRequest `json:"pull_request"`
 	Sender     Sender     `json:"sender"`
-}
-
-//Push events
-type pushhook struct {
 	Refspec     string     `json:"ref"`
-	Repository  Repository `json:"repository"`
 	Pusher      Pusher     `json:"pusher"`
-	Sender      Sender     `json:"sender"`
 	Forced      bool       `json:"forced"`
 	Deleted     bool       `json:"deleted"`
 	Created     bool       `json:"created"`
 	CompareLink string     `json:"compare"`
 	Commits     []Commit   `json:"commits"`
 	Baserefspec string     `json:"base_ref"`
+	Issue      Issue      `json:"issue"`
 }
 
 type Repository struct {
 	FullName  string `json:"full_name"`
 	IsPrivate bool   `json:"private"`
-}
-
-type Pusher struct {
-	Name string `json:"name"`
 }
 
 type Commit struct {
@@ -35,22 +28,6 @@ type Commit struct {
 	URL       string `json:"url"`
 	Author    Author `json:"author"`
 	Committer Author `json:"committer"`
-}
-
-type Author struct {
-	User string `json:"username"`
-}
-
-type Sender struct {
-	Login string `json:"login"`
-}
-
-//Pull Request events
-type prhook struct {
-	Action      string      `json:"action"`
-	PullRequest PullRequest `json:"pull_request"`
-	Repository  Repository  `json:"repository"`
-	Sender      Sender      `json:"sender"`
 }
 
 type PullRequest struct {
@@ -65,21 +42,25 @@ type PullRequest struct {
 	Sender   Sender `json:"sender"`
 }
 
-type User struct {
-	Login string `json:"login"`
-}
-
-//Issue events
-type issuehook struct {
-	Action     string     `json:"action"`
-	Issue      Issue      `json:"issue"`
-	Repository Repository `json:"repository"`
-	Sender     User       `json:"sender"`
-}
-
 type Issue struct {
 	HtmlURL string `json:"html_url"`
 	Title   string `json:"title"`
 	State   string `json:"state"`
 	User    User   `json:"user"`
+}
+
+type Pusher struct {
+	Name string `json:"name"`
+}
+
+type Author struct {
+	User string `json:"username"`
+}
+
+type Sender struct {
+	Login string `json:"login"`
+}
+
+type User struct {
+	Login string `json:"login"`
 }

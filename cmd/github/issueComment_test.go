@@ -8,7 +8,7 @@ import (
 
 func Test_githubissuehandler_handIssueCommentEvent_comment(t *testing.T) {
 	g := &githubIssueCommenthandler{}
-	hook := issuehook{}
+	hook := webhook{}
 	err := getTestData("issuecomments/commented_1.json", &hook)
 	if err != nil {
 		t.Fatal("Unable to parse example data")
@@ -21,7 +21,7 @@ func Test_githubissuehandler_handIssueCommentEvent_comment(t *testing.T) {
 
 func Test_githubissuehandler_handIssueCommentEvent_unknown(t *testing.T) {
 	g := &githubIssueCommenthandler{}
-	hook := issuehook{}
+	hook := webhook{}
 	hook.Action = "ThisWillError"
 	messages := g.handleIssueCommentEvent(hook)
 	if len(messages) != 0 {
@@ -35,7 +35,7 @@ func Test_githubissuehandler_handleIssueCommentCreated(t *testing.T) {
 	for index := range tests {
 		t.Run(tests[index], func(t *testing.T) {
 			g := &githubIssueCommenthandler{}
-			hook := issuehook{}
+			hook := webhook{}
 			err := getTestData(tests[index], &hook)
 			if err != nil {
 				t.Fatal("Unable to parse example data")

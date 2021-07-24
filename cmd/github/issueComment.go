@@ -6,7 +6,7 @@ import (
 
 type githubIssueCommenthandler struct{}
 
-func (g *githubIssueCommenthandler) handleIssueCommentEvent(data issuehook) (messages []string) {
+func (g *githubIssueCommenthandler) handleIssueCommentEvent(data webhook) (messages []string) {
 	switch data.Action {
 	case "created":
 		return g.handleIssueCommentCreated(data)
@@ -14,7 +14,7 @@ func (g *githubIssueCommenthandler) handleIssueCommentEvent(data issuehook) (mes
 	return []string{}
 }
 
-func (g *githubIssueCommenthandler) handleIssueCommentCreated(data issuehook) (messages []string) {
+func (g *githubIssueCommenthandler) handleIssueCommentCreated(data webhook) (messages []string) {
 	messages = append(messages, fmt.Sprintf(
 		"[%s] %s commented on issue %s - %s",
 		data.Repository.FullName,

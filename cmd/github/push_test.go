@@ -15,38 +15,38 @@ func Test_github_tidyPushRefspecs(t *testing.T) {
 	tests := []struct {
 		name   string
 		fields fields
-		args   *pushhook
-		want   *pushhook
+		args   *webhook
+		want   *webhook
 	}{
 		{
 			name:   "refspec: master branch",
 			fields: fields{},
-			args:   &pushhook{Refspec: "refs/heads/master"},
-			want:   &pushhook{Refspec: "branch master"},
+			args:   &webhook{Refspec: "refs/heads/master"},
+			want:   &webhook{Refspec: "branch master"},
 		},
 		{
 			name:   "refspec: tag v1",
 			fields: fields{},
-			args:   &pushhook{Refspec: "refs/tags/v1.0.0"},
-			want:   &pushhook{Refspec: "tag v1.0.0"},
+			args:   &webhook{Refspec: "refs/tags/v1.0.0"},
+			want:   &webhook{Refspec: "tag v1.0.0"},
 		},
 		{
 			name:   "baserefspec: master branch",
 			fields: fields{},
-			args:   &pushhook{Baserefspec: "refs/heads/master"},
-			want:   &pushhook{Baserefspec: "branch master"},
+			args:   &webhook{Baserefspec: "refs/heads/master"},
+			want:   &webhook{Baserefspec: "branch master"},
 		},
 		{
 			name:   "baserefspec: tag v1",
 			fields: fields{},
-			args:   &pushhook{Baserefspec: "refs/tags/v1.0.0"},
-			want:   &pushhook{Baserefspec: "tag v1.0.0"},
+			args:   &webhook{Baserefspec: "refs/tags/v1.0.0"},
+			want:   &webhook{Baserefspec: "tag v1.0.0"},
 		},
 		{
 			name:   "refspec: non master",
 			fields: fields{},
-			args:   &pushhook{Baserefspec: "refs/heads/testing"},
-			want:   &pushhook{Baserefspec: "branch testing"},
+			args:   &webhook{Baserefspec: "refs/heads/testing"},
+			want:   &webhook{Baserefspec: "branch testing"},
 		},
 	}
 	for _, tt := range tests {
@@ -65,7 +65,7 @@ func Test_github_handlePushEvent(t *testing.T) {
 	for index := range tests {
 		t.Run(tests[index], func(t *testing.T) {
 			g := &githubPushHandler{}
-			hook := pushhook{}
+			hook := webhook{}
 			err := getTestData(tests[index], &hook)
 			if err != nil {
 				t.Fatal("Unable to parse example data")
@@ -82,7 +82,7 @@ func Test_github_handleCommit(t *testing.T) {
 	for index := range tests {
 		t.Run(tests[index], func(t *testing.T) {
 			g := &githubPushHandler{}
-			hook := pushhook{}
+			hook := webhook{}
 			err := getTestData(tests[index], &hook)
 			if err != nil {
 				t.Fatal("Unable to parse example data")
@@ -99,7 +99,7 @@ func Test_githubPushHandler_handleDelete(t *testing.T) {
 	for index := range tests {
 		t.Run(tests[index], func(t *testing.T) {
 			g := &githubPushHandler{}
-			hook := pushhook{}
+			hook := webhook{}
 			err := getTestData(tests[index], &hook)
 			if err != nil {
 				t.Fatal("Unable to parse example data")

@@ -18,7 +18,7 @@ type githubWebhookHandler struct {
 func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte) error {
 	switch eventType {
 	case "ping":
-		data := pinghook{}
+		data := webhook{}
 		err := json.Unmarshal(bodyBytes, &data)
 		if err == nil {
 			go func() {
@@ -33,7 +33,7 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 			return err
 		}
 	case "push":
-		data := pushhook{}
+		data := webhook{}
 		handler := githubPushHandler{}
 		err := json.Unmarshal(bodyBytes, &data)
 		if err == nil {
@@ -49,7 +49,7 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 			return err
 		}
 	case "pull_request":
-		data := prhook{}
+		data := webhook{}
 		handler := githubPRHandler{}
 		err := json.Unmarshal(bodyBytes, &data)
 		if err == nil {
@@ -65,7 +65,7 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 			return err
 		}
 	case "issues":
-		data := issuehook{}
+		data := webhook{}
 		handler := githubissuehandler{}
 		err := json.Unmarshal(bodyBytes, &data)
 		if err == nil {
@@ -81,7 +81,7 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 			return err
 		}
 	case "issue_comment":
-		data := issuehook{}
+		data := webhook{}
 		handler := githubIssueCommenthandler{}
 		err := json.Unmarshal(bodyBytes, &data)
 		if err == nil {
