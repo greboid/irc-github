@@ -9,7 +9,7 @@ require (
 	github.com/greboid/irc/v4 v4.0.0
 	github.com/kouhin/envflag v0.0.0-20150818174321-0e9a86061649
 	github.com/sebdah/goldie/v2 v2.8.0
-	go.uber.org/zap v1.27.0
+	go.uber.org/zap v1.27.1
 )
 
 require (
