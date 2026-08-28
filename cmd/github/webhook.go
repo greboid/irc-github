@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 )
 
 type messageSender interface {
@@ -25,11 +26,11 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 				g.hookSender = data.Sender.Login
 				err := g.sendMessage(data.Repository.IsPrivate, fmt.Sprintf("Ping received for %s", data.Repository.FullName))
 				if err != nil {
-					log.Errorf("Error handling ping: %s", err.Error())
+					slog.Error("Error handling ping: %s", err.Error())
 				}
 			}()
 		} else {
-			log.Errorf("Error handling ping: %s", err.Error())
+			slog.Error("Error handling ping: %s", err.Error())
 			return err
 		}
 	case "push":
@@ -41,11 +42,11 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 				g.hookSender = data.Sender.Login
 				err := g.sendMessage(data.Repository.IsPrivate, handler.handlePushEvent(data)...)
 				if err != nil {
-					log.Errorf("Error handling push: %s", err.Error())
+					slog.Error("Error handling push: %s", err.Error())
 				}
 			}()
 		} else {
-			log.Errorf("Error handling push: %s", err.Error())
+			slog.Error("Error handling push: %s", err.Error())
 			return err
 		}
 	case "pull_request":
@@ -57,11 +58,11 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 				g.hookSender = data.Sender.Login
 				err := g.sendMessage(data.Repository.IsPrivate, handler.handlePREvent(data)...)
 				if err != nil {
-					log.Errorf("Error handling push: %s", err.Error())
+					slog.Error("Error handling push: %s", err.Error())
 				}
 			}()
 		} else {
-			log.Errorf("Error handling PR: %s", err.Error())
+			slog.Error("Error handling PR: %s", err.Error())
 			return err
 		}
 	case "issues":
@@ -73,11 +74,11 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 				g.hookSender = data.Sender.Login
 				err := g.sendMessage(data.Repository.IsPrivate, handler.handleIssueEvent(data)...)
 				if err != nil {
-					log.Errorf("Error handling push: %s", err.Error())
+					slog.Error("Error handling push: %s", err.Error())
 				}
 			}()
 		} else {
-			log.Errorf("Error handling PR: %s", err.Error())
+			slog.Error("Error handling PR: %s", err.Error())
 			return err
 		}
 	case "issue_comment":
@@ -89,11 +90,11 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 				g.hookSender = data.Sender.Login
 				err := g.sendMessage(data.Repository.IsPrivate, handler.handleIssueCommentEvent(data)...)
 				if err != nil {
-					log.Errorf("Error handling push: %s", err.Error())
+					slog.Error("Error handling push: %s", err.Error())
 				}
 			}()
 		} else {
-			log.Errorf("Error handling PR: %s", err.Error())
+			slog.Error("Error handling PR: %s", err.Error())
 			return err
 		}
 	case "check_run":
