@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/csmith/envflag/v2 v2.0.0
-	github.com/csmith/slogflags v1.0.0
+	github.com/csmith/slogflags v1.2.0
 	github.com/greboid/irc-bot/v5 v5.0.8
 	github.com/sebdah/goldie/v2 v2.8.0
 )
