@@ -37,13 +37,13 @@ func main() {
 	var err error
 	helper, err = plugins.NewHelper(fmt.Sprintf("%s:%d", *RPCHost, uint16(*RPCPort)), *RPCToken)
 	if err != nil {
-		slog.Error("Unable to create plugin helper: %s", err.Error())
+		slog.Error("Unable to create plugin helper", slog.Any("error", err))
 		os.Exit(1)
 		return
 	}
 	err = helper.RegisterWebhook("github", handleGithub)
 	if err != nil {
-		slog.Error("Error registering webhook: %s", err.Error())
+		slog.Error("Error registering webhook", slog.Any("error", err))
 		os.Exit(1)
 		return
 	}
@@ -55,7 +55,7 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 	eventType := headers.Get("X-GitHub-Event")
 	header := strings.SplitN(headers.Get("X-Hub-Signature"), "=", 2)
 	if header[0] != "sha1" {
-		slog.Debug("Error: %s", "Bad header")
+		slog.Debug("Bad header")
 		return &rpc.HttpResponse{
 			Header: nil,
 			Body:   []byte("Bad headers"),
@@ -63,7 +63,7 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 		}
 	}
 	if !CheckGithubSecret(request.Body, header[1], *GithubSecret) {
-		slog.Debug("Error: %s", "Bad hash")
+		slog.Debug("Bad hash")
 		return &rpc.HttpResponse{
 			Header: nil,
 			Body:   []byte("Bad hash"),
@@ -71,14 +71,14 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 		}
 	}
 	go func() {
-		slog.Info("Received github notification: %s", eventType)
+		slog.Info("Received github notification", slog.Any("event", eventType))
 		webhookHandler := githubWebhookHandler{
 			sender:         helper,
 			ignoredSenders: parseIgnoredUsers(*IgnoredUsers),
 		}
 		err := webhookHandler.handleWebhook(eventType, request.Body)
 		if err != nil {
-			slog.Error("Unable to handle webhook: %s", err.Error())
+			slog.Error("Unable to handle webhook", slog.Any("error", err))
 		}
 	}()
 	return &rpc.HttpResponse{
