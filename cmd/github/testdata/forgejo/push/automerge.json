@@ -1,0 +1,68 @@
+{
+  "ref": "refs/heads/master",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1a",
+  "compare_url": "https://forgejo.example/greboid/todo/compare/master...2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1a",
+  "commits": [
+    {
+      "id": "2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1a",
+      "message": "Update git.mouse-lake.ts.net/greboid/todo digest to 1a2b3c4\n\nAutomerged by depbot",
+      "url": "https://forgejo.example/greboid/todo/commit/2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1a",
+      "author": {
+        "name": "Auto Updater",
+        "email": "depbot@users.noreply.git.mouse-lake.ts.net",
+        "username": ""
+      },
+      "committer": {
+        "name": "Auto Updater",
+        "email": "depbot@users.noreply.git.mouse-lake.ts.net",
+        "username": ""
+      },
+      "timestamp": "2024-01-01T12:00:00Z",
+      "added": [],
+      "removed": [],
+      "modified": [
+        "go.mod"
+      ]
+    }
+  ],
+  "total_commits": 1,
+  "head_commit": {
+    "id": "2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1a",
+    "message": "Update git.mouse-lake.ts.net/greboid/todo digest to 1a2b3c4\n\nAutomerged by depbot",
+    "url": "https://forgejo.example/greboid/todo/commit/2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1a",
+    "author": {
+      "name": "Auto Updater",
+      "email": "depbot@users.noreply.git.mouse-lake.ts.net",
+      "username": ""
+    },
+    "committer": {
+      "name": "Auto Updater",
+      "email": "depbot@users.noreply.git.mouse-lake.ts.net",
+      "username": ""
+    }
+  },
+  "repository": {
+    "id": 1,
+    "owner": {
+      "id": 1,
+      "login": "greboid",
+      "full_name": "greboid"
+    },
+    "name": "todo",
+    "full_name": "greboid/todo",
+    "private": false,
+    "html_url": "https://forgejo.example/greboid/todo",
+    "default_branch": "master"
+  },
+  "pusher": {
+    "id": 1,
+    "login": "greboid",
+    "full_name": "greboid"
+  },
+  "sender": {
+    "id": 1,
+    "login": "greboid",
+    "full_name": "greboid"
+  }
+}

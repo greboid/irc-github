@@ -111,6 +111,16 @@ func (p Pusher) displayName() string {
 
 type Author struct {
 	User string `json:"username"`
+	Name string `json:"name"`
+}
+
+// authorDisplayName covers forgejo automerge commits where the git author
+// email matches no forgejo user and username is empty.
+func (c Commit) authorDisplayName() string {
+	if c.Author.User != "" {
+		return c.Author.User
+	}
+	return c.Author.Name
 }
 
 type Sender struct {

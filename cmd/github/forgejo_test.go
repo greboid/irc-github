@@ -278,6 +278,7 @@ func Test_forgejo_eventMessages(t *testing.T) {
 		filename  string
 	}{
 		{eventType: "push", filename: "forgejo/push/basic.json"},
+		{eventType: "push", filename: "forgejo/push/automerge.json"},
 		{eventType: "pull_request", filename: "forgejo/pullrequest/opened_1.json"},
 		{eventType: "pull_request", filename: "forgejo/pullrequest/merged_1.json"},
 		{eventType: "pull_request", filename: "forgejo/pullrequest/closed_1.json"},

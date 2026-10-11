@@ -88,7 +88,7 @@ func (g *githubPushHandler) handleCommit(data webhook) (messages []string) {
 		messages = append(messages, fmt.Sprintf(
 			"[%s] %s committed %s - %s",
 			data.Repository.FullName,
-			commit.Author.User,
+			commit.authorDisplayName(),
 			shortID,
 			strings.SplitN(commit.Message, "\n", 2)[0],
 		))

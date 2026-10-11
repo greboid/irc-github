@@ -110,6 +110,37 @@ func Test_githubPushHandler_handleDelete(t *testing.T) {
 	}
 }
 
+func Test_github_handleCommit_authorDisplayName(t *testing.T) {
+	tests := []struct {
+		name   string
+		commit Commit
+		want   string
+	}{
+		{
+			name:   "github username",
+			commit: Commit{Author: Author{User: "testuser", Name: "Test User"}},
+			want:   "testuser",
+		},
+		{
+			name:   "forgejo automerge with no matching user",
+			commit: Commit{Author: Author{User: "", Name: "Auto Updater"}},
+			want:   "Auto Updater",
+		},
+		{
+			name:   "both empty",
+			commit: Commit{Author: Author{User: "", Name: ""}},
+			want:   "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.commit.authorDisplayName(); got != tt.want {
+				t.Errorf("authorDisplayName() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
 func Test_github_handleCommit_shortID(t *testing.T) {
 	g := &githubPushHandler{}
 	got := g.handleCommit(webhook{
