@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"slices"
 )
 
 type messageSender interface {
@@ -115,10 +116,8 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 
 func (g *githubWebhookHandler) sendMessage(isPrivate bool, messages ...string) error {
 	sender := g.hookSender
-	for _, ignoredSender := range g.ignoredSenders {
-		if sender == ignoredSender {
-			return nil
-		}
+	if slices.Contains(g.ignoredSenders, sender) {
+		return nil
 	}
 	notifyChannel := *Channel
 	if isPrivate && *HidePrivate {

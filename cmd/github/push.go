@@ -15,15 +15,15 @@ func (g *githubPushHandler) tidyPushRefspecs(data *webhook) {
 }
 
 func (g *githubPushHandler) tidyRefsHeads(input string) string {
-	if strings.HasPrefix(input, "refs/heads/") {
-		return fmt.Sprintf("branch %s", strings.TrimPrefix(input, "refs/heads/"))
+	if after, ok := strings.CutPrefix(input, "refs/heads/"); ok {
+		return fmt.Sprintf("branch %s", after)
 	}
 	return input
 }
 
 func (g *githubPushHandler) tidyRefsTags(input string) string {
-	if strings.HasPrefix(input, "refs/tags/") {
-		return fmt.Sprintf("tag %s", strings.TrimPrefix(input, "refs/tags/"))
+	if after, ok := strings.CutPrefix(input, "refs/tags/"); ok {
+		return fmt.Sprintf("tag %s", after)
 	}
 	return input
 }
@@ -81,11 +81,15 @@ func (g *githubPushHandler) handleCommit(data webhook) (messages []string) {
 		data.CompareLink,
 	))
 	for _, commit := range data.Commits {
+		shortID := commit.ID
+		if len(shortID) > 6 {
+			shortID = shortID[len(shortID)-6:]
+		}
 		messages = append(messages, fmt.Sprintf(
 			"[%s] %s committed %s - %s",
 			data.Repository.FullName,
 			commit.Author.User,
-			commit.ID[len(commit.ID)-6:],
+			shortID,
 			strings.SplitN(commit.Message, "\n", 2)[0],
 		))
 	}

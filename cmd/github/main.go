@@ -53,8 +53,8 @@ func main() {
 func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 	headers := rpc.ConvertFromRPCHeaders(request.Header)
 	eventType := headers.Get("X-GitHub-Event")
-	header := strings.SplitN(headers.Get("X-Hub-Signature"), "=", 2)
-	if header[0] != "sha1" {
+	signature, ok := parseSignatureHeader(headers.Get("X-Hub-Signature"))
+	if !ok {
 		slog.Debug("Bad header")
 		return &rpc.HttpResponse{
 			Header: nil,
@@ -62,7 +62,7 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 			Status: http.StatusInternalServerError,
 		}
 	}
-	if !CheckGithubSecret(request.Body, header[1], *GithubSecret) {
+	if !CheckGithubSecret(request.Body, signature, *GithubSecret) {
 		slog.Debug("Bad hash")
 		return &rpc.HttpResponse{
 			Header: nil,
@@ -88,17 +88,25 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 	}
 }
 
+func parseSignatureHeader(header string) (string, bool) {
+	parts := strings.SplitN(header, "=", 2)
+	if len(parts) != 2 || parts[0] != "sha1" {
+		return "", false
+	}
+	return parts[1], true
+}
+
 func CheckGithubSecret(bodyBytes []byte, headerSecret string, githubSecret string) bool {
 	h := hmac.New(sha1.New, []byte(githubSecret))
 	h.Write(bodyBytes)
-	expected := fmt.Sprintf("%s", hex.EncodeToString(h.Sum(nil)))
+	expected := hex.EncodeToString(h.Sum(nil))
 	return len(expected) == len(headerSecret) && subtle.ConstantTimeCompare([]byte(expected), []byte(headerSecret)) == 1
 }
 
 func parseIgnoredUsers(users string) []string {
 	ignoredUsers := make([]string, 0)
-	splitUsers := strings.Split(users, ",")
-	for _, user := range splitUsers {
+	splitUsers := strings.SplitSeq(users, ",")
+	for user := range splitUsers {
 		trimmedUser := strings.TrimSpace(user)
 		if trimmedUser != "" {
 			ignoredUsers = append(ignoredUsers, trimmedUser)

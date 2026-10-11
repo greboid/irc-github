@@ -109,3 +109,20 @@ func Test_githubPushHandler_handleDelete(t *testing.T) {
 		})
 	}
 }
+
+func Test_github_handleCommit_shortID(t *testing.T) {
+	g := &githubPushHandler{}
+	got := g.handleCommit(webhook{
+		Repository: Repository{FullName: "user/repo"},
+		Commits: []Commit{
+			{ID: "abc", Message: "short id\nsecond line"},
+		},
+	})
+	want := []string{
+		"[user/repo]  pushed 1 commits to  - ",
+		"[user/repo]  committed abc - short id",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("handleCommit() = %v, want %v", got, want)
+	}
+}

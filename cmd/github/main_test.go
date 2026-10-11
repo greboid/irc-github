@@ -1,6 +1,9 @@
 package main
 
 import (
+	"crypto/hmac"
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -33,7 +36,7 @@ func (m *mockIRCPluginClient) SendChannelMessage(_ string, _ ...string) error {
 	return nil
 }
 
-func getTestData(filename string, output interface{}) error {
+func getTestData(filename string, output any) error {
 	data, err := getTestDataBytes(filename)
 	if err != nil {
 		return err
@@ -104,5 +107,60 @@ func Test_parseIgnoredUsers(t *testing.T) {
 				t.Errorf("parseIgnoredUsers() = %#+v, want %#+v", gotIgnoredUsers, tt.wantIgnoredUsers)
 			}
 		})
+	}
+}
+
+func Test_parseSignatureHeader(t *testing.T) {
+	tests := []struct {
+		name        string
+		headerValue string
+		wantValue   string
+		wantOK      bool
+	}{
+		{
+			name:        "Valid signature",
+			headerValue: "sha1=abcdef",
+			wantValue:   "abcdef",
+			wantOK:      true,
+		},
+		{
+			name:        "Missing separator",
+			headerValue: "sha1",
+			wantValue:   "",
+			wantOK:      false,
+		},
+		{
+			name:        "Wrong algorithm",
+			headerValue: "sha256=abcdef",
+			wantValue:   "",
+			wantOK:      false,
+		},
+		{
+			name:        "Empty header",
+			headerValue: "",
+			wantValue:   "",
+			wantOK:      false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotValue, gotOK := parseSignatureHeader(tt.headerValue)
+			if gotValue != tt.wantValue || gotOK != tt.wantOK {
+				t.Errorf("parseSignatureHeader() = %q, %v, want %q, %v", gotValue, gotOK, tt.wantValue, tt.wantOK)
+			}
+		})
+	}
+}
+
+func Test_CheckGithubSecret(t *testing.T) {
+	body := []byte("test body")
+	h := hmac.New(sha1.New, []byte("secret"))
+	h.Write(body)
+	valid := hex.EncodeToString(h.Sum(nil))
+	if !CheckGithubSecret(body, valid, "secret") {
+		t.Error("CheckGithubSecret() = false for valid signature, want true")
+	}
+	if CheckGithubSecret(body, "0123456789012345678901234567890123456789", "secret") {
+		t.Error("CheckGithubSecret() = true for invalid signature, want false")
 	}
 }
