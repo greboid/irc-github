@@ -42,17 +42,16 @@ func main() {
 		os.Exit(1)
 		return
 	}
-	err = helper.RegisterWebhook("github", handleGithub)
-	if err != nil {
-		slog.Error("Error registering webhook", slog.Any("error", err))
-		os.Exit(1)
-		return
-	}
-	err = helper.RegisterWebhook("forgejo", handleForgejo)
-	if err != nil {
-		slog.Error("Error registering webhook", slog.Any("error", err))
-		os.Exit(1)
-		return
+	// RegisterWebhook blocks for the lifetime of the stream, so each webhook
+	// needs its own goroutine to get both registered.
+	errs := make(chan error, 2)
+	go func() { errs <- helper.RegisterWebhook("github", handleGithub) }()
+	go func() { errs <- helper.RegisterWebhook("forgejo", handleForgejo) }()
+	for range 2 {
+		if err := <-errs; err != nil {
+			slog.Error("Error registering webhook", slog.Any("error", err))
+			os.Exit(1)
+		}
 	}
 	slog.Info("Exiting")
 }
