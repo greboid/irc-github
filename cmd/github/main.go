@@ -26,6 +26,7 @@ var (
 	PrivateChannel = flag.String("private-channel", "", "Channel to send messages to")
 	HidePrivate    = flag.Bool("hide-private", false, "Hide notifications about private repos")
 	GithubSecret   = flag.String("github-secret", "", "Github secret for validating webhooks")
+	ForgejoSecret  = flag.String("forgejo-secret", "", "Forgejo secret for validating webhooks")
 	IgnoredUsers   = flag.String("ignored-users", "", "Comma separated list of users to ignore")
 	helper         *plugins.PluginHelper
 )
@@ -42,6 +43,12 @@ func main() {
 		return
 	}
 	err = helper.RegisterWebhook("github", handleGithub)
+	if err != nil {
+		slog.Error("Error registering webhook", slog.Any("error", err))
+		os.Exit(1)
+		return
+	}
+	err = helper.RegisterWebhook("forgejo", handleForgejo)
 	if err != nil {
 		slog.Error("Error registering webhook", slog.Any("error", err))
 		os.Exit(1)

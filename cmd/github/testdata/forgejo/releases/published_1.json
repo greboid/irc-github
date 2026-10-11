@@ -1,0 +1,35 @@
+{
+  "action": "published",
+  "release": {
+    "id": 1,
+    "tag_name": "v1.0.0",
+    "target_commitish": "main",
+    "name": "v1.0.0",
+    "draft": false,
+    "prerelease": false,
+    "html_url": "https://forgejo.example/user/repo/releases/tag/v1.0.0",
+    "author": {
+      "id": 1,
+      "login": "testuser",
+      "full_name": "Test User"
+    }
+  },
+  "repository": {
+    "id": 1,
+    "owner": {
+      "id": 1,
+      "login": "testuser",
+      "full_name": "Test User"
+    },
+    "name": "repo",
+    "full_name": "user/repo",
+    "private": false,
+    "html_url": "https://forgejo.example/user/repo",
+    "default_branch": "main"
+  },
+  "sender": {
+    "id": 1,
+    "login": "testuser",
+    "full_name": "Test User"
+  }
+}

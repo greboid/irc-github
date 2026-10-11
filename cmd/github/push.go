@@ -54,18 +54,18 @@ func (g *githubPushHandler) handleCreate(data webhook) (messages []string) {
 		messages = append(messages, fmt.Sprintf(
 			"[%s] %s created %s - %s",
 			data.Repository.FullName,
-			data.Pusher.Name,
+			data.Pusher.displayName(),
 			data.Refspec,
-			data.CompareLink,
+			data.compareLink(),
 		))
 	} else {
 		messages = append(messages, fmt.Sprintf(
 			"[%s] %s created %s from %s - %s",
 			data.Repository.FullName,
-			data.Pusher.Name,
+			data.Pusher.displayName(),
 			data.Refspec,
 			data.Baserefspec,
-			data.CompareLink,
+			data.compareLink(),
 		))
 	}
 	return
@@ -75,10 +75,10 @@ func (g *githubPushHandler) handleCommit(data webhook) (messages []string) {
 	messages = append(messages, fmt.Sprintf(
 		"[%s] %s pushed %d commits to %s - %s",
 		data.Repository.FullName,
-		data.Pusher.Name,
+		data.Pusher.displayName(),
 		len(data.Commits),
 		data.Refspec,
-		data.CompareLink,
+		data.compareLink(),
 	))
 	for _, commit := range data.Commits {
 		shortID := commit.ID

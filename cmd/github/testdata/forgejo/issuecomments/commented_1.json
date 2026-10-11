@@ -1,0 +1,43 @@
+{
+  "action": "created",
+  "number": 1,
+  "issue": {
+    "id": 1,
+    "number": 1,
+    "title": "Forgejo webhook support",
+    "html_url": "https://forgejo.example/user/repo/issues/1",
+    "state": "open",
+    "user": {
+      "id": 1,
+      "login": "testuser",
+      "full_name": "Test User"
+    }
+  },
+  "comment": {
+    "id": 1,
+    "body": "Looking into it.",
+    "user": {
+      "id": 3,
+      "login": "commenter",
+      "full_name": "Comment User"
+    }
+  },
+  "repository": {
+    "id": 1,
+    "owner": {
+      "id": 1,
+      "login": "testuser",
+      "full_name": "Test User"
+    },
+    "name": "repo",
+    "full_name": "user/repo",
+    "private": false,
+    "html_url": "https://forgejo.example/user/repo",
+    "default_branch": "main"
+  },
+  "sender": {
+    "id": 3,
+    "login": "commenter",
+    "full_name": "Comment User"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "action": "opened",
+  "number": 1,
+  "pull_request": {
+    "id": 1,
+    "number": 1,
+    "title": "Add forgejo support",
+    "html_url": "https://forgejo.example/user/repo/pulls/1",
+    "url": "https://forgejo.example/api/v1/repos/user/repo/pulls/1",
+    "state": "open",
+    "user": {
+      "id": 1,
+      "login": "testuser",
+      "full_name": "Test User"
+    },
+    "base": {
+      "label": "main",
+      "ref": "main"
+    },
+    "head": {
+      "label": "feature",
+      "ref": "feature",
+      "sha": "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b"
+    },
+    "merged": false,
+    "merged_at": null,
+    "merged_by": null
+  },
+  "repository": {
+    "id": 1,
+    "owner": {
+      "id": 1,
+      "login": "testuser",
+      "full_name": "Test User"
+    },
+    "name": "repo",
+    "full_name": "user/repo",
+    "private": false,
+    "html_url": "https://forgejo.example/user/repo",
+    "default_branch": "main"
+  },
+  "sender": {
+    "id": 1,
+    "login": "testuser",
+    "full_name": "Test User"
+  }
+}

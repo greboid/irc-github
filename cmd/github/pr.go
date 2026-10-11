@@ -8,10 +8,10 @@ func (g *githubPRHandler) handlePREvent(data webhook) (messages []string) {
 	if data.Action == "opened" {
 		return g.handlePROpen(data)
 	} else if data.Action == "closed" {
-		if data.PullRequest.Merged == "" {
-			return g.handlePRClose(data)
-		} else {
+		if data.PullRequest.isMerged() {
 			return g.handlePRMerged(data)
+		} else {
+			return g.handlePRClose(data)
 		}
 	}
 	return

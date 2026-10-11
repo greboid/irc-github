@@ -146,6 +146,22 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 			slog.Error("Error handling create", slog.Any("error", err))
 			return err
 		}
+	case "package":
+		data := webhook{}
+		handler := githubPackageHandler{}
+		err := json.Unmarshal(bodyBytes, &data)
+		if err == nil {
+			go func() {
+				g.hookSender = data.Sender.Login
+				err := g.sendMessage(data.Repository.IsPrivate, handler.handlePackageEvent(data)...)
+				if err != nil {
+					slog.Error("Error handling package", slog.Any("error", err))
+				}
+			}()
+		} else {
+			slog.Error("Error handling package", slog.Any("error", err))
+			return err
+		}
 	case "check_suite":
 		data := webhook{}
 		handler := githubCheckSuiteHandler{}

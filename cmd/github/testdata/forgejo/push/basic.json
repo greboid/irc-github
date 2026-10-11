@@ -1,0 +1,68 @@
+{
+  "ref": "refs/heads/main",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+  "compare_url": "https://forgejo.example/user/repo/compare/main...1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+  "commits": [
+    {
+      "id": "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+      "message": "Update README\n\nLonger description here",
+      "url": "https://forgejo.example/user/repo/commit/1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+      "author": {
+        "name": "Test User",
+        "email": "test@example.com",
+        "username": "testuser"
+      },
+      "committer": {
+        "name": "Test User",
+        "email": "test@example.com",
+        "username": "testuser"
+      },
+      "timestamp": "2024-01-01T12:00:00Z",
+      "added": [],
+      "removed": [],
+      "modified": [
+        "README.md"
+      ]
+    }
+  ],
+  "total_commits": 1,
+  "head_commit": {
+    "id": "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+    "message": "Update README\n\nLonger description here",
+    "url": "https://forgejo.example/user/repo/commit/1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+    "author": {
+      "name": "Test User",
+      "email": "test@example.com",
+      "username": "testuser"
+    },
+    "committer": {
+      "name": "Test User",
+      "email": "test@example.com",
+      "username": "testuser"
+    }
+  },
+  "repository": {
+    "id": 1,
+    "owner": {
+      "id": 1,
+      "login": "testuser",
+      "full_name": "Test User"
+    },
+    "name": "repo",
+    "full_name": "user/repo",
+    "private": false,
+    "html_url": "https://forgejo.example/user/repo",
+    "default_branch": "main"
+  },
+  "pusher": {
+    "id": 1,
+    "login": "testuser",
+    "full_name": "Test User"
+  },
+  "sender": {
+    "id": 1,
+    "login": "testuser",
+    "full_name": "Test User"
+  }
+}

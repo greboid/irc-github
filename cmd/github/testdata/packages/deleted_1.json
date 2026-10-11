@@ -1,0 +1,26 @@
+{
+  "action": "deleted",
+  "package": {
+    "id": 19402,
+    "name": "hello_docker",
+    "package_type": "container",
+    "html_url": "https://github.com/octocat/hello_docker/packages/19402",
+    "owner": {
+      "id": 583231,
+      "login": "octocat"
+    },
+    "package_version": {
+      "id": 20375,
+      "version": "1.0"
+    }
+  },
+  "repository": {
+    "id": 186853002,
+    "name": "hello_docker",
+    "full_name": "octocat/hello_docker",
+    "private": false
+  },
+  "sender": {
+    "login": "octocat"
+  }
+}

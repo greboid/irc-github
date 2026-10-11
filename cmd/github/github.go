@@ -13,12 +13,22 @@ type webhook struct {
 	Deleted     bool        `json:"deleted"`
 	Created     bool        `json:"created"`
 	CompareLink string      `json:"compare"`
+	CompareURL  string      `json:"compare_url"`
 	Commits     []Commit    `json:"commits"`
 	Baserefspec string      `json:"base_ref"`
 	Issue       Issue       `json:"issue"`
 	Release     Release     `json:"release"`
 	CheckRun    CheckRun    `json:"check_run"`
 	CheckSuite  CheckSuite  `json:"check_suite"`
+	Package     *Package    `json:"package"`
+}
+
+// compareLink covers github's "compare" and forgejo's "compare_url".
+func (w *webhook) compareLink() string {
+	if w.CompareLink != "" {
+		return w.CompareLink
+	}
+	return w.CompareURL
 }
 
 type Repository struct {
@@ -41,9 +51,15 @@ type PullRequest struct {
 	Title    string `json:"title"`
 	Body     string `json:"body"`
 	User     User   `json:"user"`
-	Merged   string `json:"merged_at"`
+	MergedAt string `json:"merged_at"`
+	Merged   bool   `json:"merged"`
 	MergedBy User   `json:"merged_by"`
 	Sender   Sender `json:"sender"`
+}
+
+// isMerged covers github's merged_at timestamp and forgejo's merged flag.
+func (p PullRequest) isMerged() bool {
+	return p.MergedAt != "" || p.Merged
 }
 
 type Issue struct {
@@ -81,7 +97,16 @@ type App struct {
 }
 
 type Pusher struct {
-	Name string `json:"name"`
+	Name  string `json:"name"`
+	Login string `json:"login"`
+}
+
+// displayName covers github's pusher.name and forgejo's pusher.login.
+func (p Pusher) displayName() string {
+	if p.Name != "" {
+		return p.Name
+	}
+	return p.Login
 }
 
 type Author struct {
