@@ -115,6 +115,90 @@ func Test_githubWebhookHandler_handleWebhook(t *testing.T) {
 			err:    true,
 			output: 0,
 		},
+		{
+			name:     "valid create",
+			finished: make(chan bool, 1),
+			client:   &mockIRCPluginClient{},
+			args: args{
+				eventType: "create",
+				filename:  "create_tag_1.json",
+			},
+			err:    false,
+			output: 1,
+		},
+		{
+			name:   "error create",
+			client: &mockIRCPluginClient{},
+			args: args{
+				eventType: "create",
+				filename:  "",
+			},
+			err:    true,
+			output: 0,
+		},
+		{
+			name:     "valid release",
+			finished: make(chan bool, 1),
+			client:   &mockIRCPluginClient{},
+			args: args{
+				eventType: "release",
+				filename:  "releases_published_1.json",
+			},
+			err:    false,
+			output: 1,
+		},
+		{
+			name:   "error release",
+			client: &mockIRCPluginClient{},
+			args: args{
+				eventType: "release",
+				filename:  "",
+			},
+			err:    true,
+			output: 0,
+		},
+		{
+			name:     "valid check_run",
+			finished: make(chan bool, 1),
+			client:   &mockIRCPluginClient{},
+			args: args{
+				eventType: "check_run",
+				filename:  "checkruns/failure_1.json",
+			},
+			err:    false,
+			output: 1,
+		},
+		{
+			name:   "error check_run",
+			client: &mockIRCPluginClient{},
+			args: args{
+				eventType: "check_run",
+				filename:  "",
+			},
+			err:    true,
+			output: 0,
+		},
+		{
+			name:     "valid check_suite",
+			finished: make(chan bool, 1),
+			client:   &mockIRCPluginClient{},
+			args: args{
+				eventType: "check_suite",
+				filename:  "checksuites/failure_1.json",
+			},
+			err:    false,
+			output: 1,
+		},
+		{
+			name:   "error check_suite",
+			client: &mockIRCPluginClient{},
+			args: args{
+				eventType: "check_suite",
+				filename:  "",
+			},
+			err:    true,
+			output: 0,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -1,0 +1,26 @@
+{
+  "action": "completed",
+  "check_suite": {
+    "id": 987654321,
+    "head_branch": "master",
+    "head_sha": "d6f5c4b2f2b6c8e0f0d0c0b0a090807060504030",
+    "status": "completed",
+    "conclusion": "failure",
+    "app": {
+      "id": 15368,
+      "name": "GitHub Actions"
+    }
+  },
+  "repository": {
+    "id": 243344149,
+    "name": "irc",
+    "full_name": "greboid/irc",
+    "private": false,
+    "html_url": "https://github.com/greboid/irc"
+  },
+  "sender": {
+    "login": "greboid",
+    "id": 189618,
+    "type": "User"
+  }
+}

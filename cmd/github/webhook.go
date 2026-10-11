@@ -99,17 +99,69 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 			return err
 		}
 	case "check_run":
-		// TODO: Handle
-		return nil
+		data := webhook{}
+		handler := githubCheckRunHandler{}
+		err := json.Unmarshal(bodyBytes, &data)
+		if err == nil {
+			go func() {
+				g.hookSender = data.Sender.Login
+				err := g.sendMessage(data.Repository.IsPrivate, handler.handleCheckRunEvent(data)...)
+				if err != nil {
+					slog.Error("Error handling check run", slog.Any("error", err))
+				}
+			}()
+		} else {
+			slog.Error("Error handling check run", slog.Any("error", err))
+			return err
+		}
 	case "release":
-		// TODO: Handle
-		return nil
+		data := webhook{}
+		handler := githubReleaseHandler{}
+		err := json.Unmarshal(bodyBytes, &data)
+		if err == nil {
+			go func() {
+				g.hookSender = data.Sender.Login
+				err := g.sendMessage(data.Repository.IsPrivate, handler.handleReleaseEvent(data)...)
+				if err != nil {
+					slog.Error("Error handling release", slog.Any("error", err))
+				}
+			}()
+		} else {
+			slog.Error("Error handling release", slog.Any("error", err))
+			return err
+		}
 	case "create":
-		// TODO: Handle
-		return nil
+		data := webhook{}
+		handler := githubCreateHandler{}
+		err := json.Unmarshal(bodyBytes, &data)
+		if err == nil {
+			go func() {
+				g.hookSender = data.Sender.Login
+				err := g.sendMessage(data.Repository.IsPrivate, handler.handleCreateEvent(data)...)
+				if err != nil {
+					slog.Error("Error handling create", slog.Any("error", err))
+				}
+			}()
+		} else {
+			slog.Error("Error handling create", slog.Any("error", err))
+			return err
+		}
 	case "check_suite":
-		// TODO: Handle
-		return nil
+		data := webhook{}
+		handler := githubCheckSuiteHandler{}
+		err := json.Unmarshal(bodyBytes, &data)
+		if err == nil {
+			go func() {
+				g.hookSender = data.Sender.Login
+				err := g.sendMessage(data.Repository.IsPrivate, handler.handleCheckSuiteEvent(data)...)
+				if err != nil {
+					slog.Error("Error handling check suite", slog.Any("error", err))
+				}
+			}()
+		} else {
+			slog.Error("Error handling check suite", slog.Any("error", err))
+			return err
+		}
 	}
 	return nil
 }

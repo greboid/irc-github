@@ -1,0 +1,25 @@
+{
+  "action": "completed",
+  "check_run": {
+    "id": 1234567890,
+    "name": "build",
+    "head_sha": "d6f5c4b2f2b6c8e0f0d0c0b0a090807060504030",
+    "status": "completed",
+    "conclusion": "failure",
+    "html_url": "https://github.com/greboid/irc/commit/d6f5c4b2f2b6c8e0f0d0c0b0a090807060504030/checks/1234567890",
+    "started_at": "2020-03-21T16:54:11Z",
+    "completed_at": "2020-03-21T16:55:11Z"
+  },
+  "repository": {
+    "id": 243344149,
+    "name": "irc",
+    "full_name": "greboid/irc",
+    "private": false,
+    "html_url": "https://github.com/greboid/irc"
+  },
+  "sender": {
+    "login": "greboid",
+    "id": 189618,
+    "type": "User"
+  }
+}

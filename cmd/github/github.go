@@ -7,6 +7,7 @@ type webhook struct {
 	PullRequest PullRequest `json:"pull_request"`
 	Sender      Sender      `json:"sender"`
 	Refspec     string      `json:"ref"`
+	RefType     string      `json:"ref_type"`
 	Pusher      Pusher      `json:"pusher"`
 	Forced      bool        `json:"forced"`
 	Deleted     bool        `json:"deleted"`
@@ -15,6 +16,9 @@ type webhook struct {
 	Commits     []Commit    `json:"commits"`
 	Baserefspec string      `json:"base_ref"`
 	Issue       Issue       `json:"issue"`
+	Release     Release     `json:"release"`
+	CheckRun    CheckRun    `json:"check_run"`
+	CheckSuite  CheckSuite  `json:"check_suite"`
 }
 
 type Repository struct {
@@ -47,6 +51,33 @@ type Issue struct {
 	Title   string `json:"title"`
 	State   string `json:"state"`
 	User    User   `json:"user"`
+}
+
+type Release struct {
+	HtmlURL    string `json:"html_url"`
+	TagName    string `json:"tag_name"`
+	Name       string `json:"name"`
+	Draft      bool   `json:"draft"`
+	Prerelease bool   `json:"prerelease"`
+	Author     User   `json:"author"`
+}
+
+type CheckRun struct {
+	Name       string `json:"name"`
+	Status     string `json:"status"`
+	Conclusion string `json:"conclusion"`
+	HtmlURL    string `json:"html_url"`
+}
+
+type CheckSuite struct {
+	Status     string `json:"status"`
+	Conclusion string `json:"conclusion"`
+	HeadBranch string `json:"head_branch"`
+	App        App    `json:"app"`
+}
+
+type App struct {
+	Name string `json:"name"`
 }
 
 type Pusher struct {
