@@ -21,6 +21,18 @@ For Forgejo, also set a forgejo secret (GITEA_* headers are also accepted, so th
  check run or check suite notifications, and that a single deployment sends both github and forgejo
  notifications to the same channel.
 
+Links in the notifications can be rewritten, for example to point from a private forgejo instance
+ to its public github mirror.  Rules are comma separated in from=to format and applied in order to
+ the outgoing messages:
+
+```
+REWRITE_LINKS: https://forgejo.example.com/=https://github.com/,https://other.example.com/=https://github.com/other
+```
+
+```
+github -rewrite-links 'https://forgejo.example.com/=https://github.com/'
+```
+
 #### Example running
 
 ```

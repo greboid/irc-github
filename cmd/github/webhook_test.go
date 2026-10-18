@@ -230,6 +230,84 @@ func Test_githubWebhookHandler_handleWebhook(t *testing.T) {
 	}
 }
 
+type mockRecordingIRCPluginClient struct {
+	messages []string
+}
+
+func (m *mockRecordingIRCPluginClient) SendChannelMessage(_ string, messages ...string) error {
+	m.messages = append(m.messages, messages...)
+	return nil
+}
+
+func Test_rewriteMessage(t *testing.T) {
+	rules := []rewriteRule{
+		{from: "https://forge.example.com/", to: "https://github.com/"},
+		{from: "https://other.example.com/", to: "https://github.com/other/"},
+	}
+	tests := []struct {
+		name    string
+		rules   []rewriteRule
+		message string
+		wanted  string
+	}{
+		{
+			name:    "No rules",
+			rules:   nil,
+			message: "https://forge.example.com/user/repo",
+			wanted:  "https://forge.example.com/user/repo",
+		},
+		{
+			name:    "Single rule match",
+			rules:   rules[:1],
+			message: "[user/repo] created branch main - https://forge.example.com/user/repo/compare/a...b",
+			wanted:  "[user/repo] created branch main - https://github.com/user/repo/compare/a...b",
+		},
+		{
+			name:    "Later rule",
+			rules:   rules,
+			message: "https://other.example.com/user/repo",
+			wanted:  "https://github.com/other/user/repo",
+		},
+		{
+			name:    "Multiple occurrences",
+			rules:   rules[:1],
+			message: "https://forge.example.com/a https://forge.example.com/b",
+			wanted:  "https://github.com/a https://github.com/b",
+		},
+		{
+			name:    "No match",
+			rules:   rules,
+			message: "https://unrelated.example.com/user/repo",
+			wanted:  "https://unrelated.example.com/user/repo",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := rewriteMessage(tt.rules, tt.message); got != tt.wanted {
+				t.Errorf("rewriteMessage() = %q, want %q", got, tt.wanted)
+			}
+		})
+	}
+}
+
+func Test_githubWebhookHandler_sendMessage_rewritesLinks(t *testing.T) {
+	client := &mockRecordingIRCPluginClient{}
+	g := &githubWebhookHandler{
+		sender: client,
+		rewriteRules: []rewriteRule{
+			{from: "https://forge.example.com/", to: "https://github.com/"},
+		},
+	}
+	err := g.sendMessage(false, "[user/repo] user pushed 1 commits to branch main - https://forge.example.com/user/repo/compare/a...b")
+	if err != nil {
+		t.Fatalf("sendMessage() error = %v", err)
+	}
+	wanted := "[user/repo] user pushed 1 commits to branch main - https://github.com/user/repo/compare/a...b"
+	if len(client.messages) != 1 || client.messages[0] != wanted {
+		t.Errorf("sendMessage() sent = %#+v, want %#+v", client.messages, []string{wanted})
+	}
+}
+
 func Test_githubWebhookHandler_sendMessage(t *testing.T) {
 	tests := []struct {
 		name     string

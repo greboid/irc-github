@@ -110,6 +110,76 @@ func Test_parseIgnoredUsers(t *testing.T) {
 	}
 }
 
+func Test_parseRewriteRules(t *testing.T) {
+	tests := []struct {
+		name       string
+		inputRules string
+		wantRules  []rewriteRule
+	}{
+		{
+			name:       "Empty string",
+			inputRules: "",
+			wantRules:  []rewriteRule{},
+		},
+		{
+			name:       "Single rule",
+			inputRules: "https://forge.example.com/=https://github.com/",
+			wantRules:  []rewriteRule{{from: "https://forge.example.com/", to: "https://github.com/"}},
+		},
+		{
+			name:       "Multiple rules",
+			inputRules: "https://forge.example.com/=https://github.com/,https://other.example.com/=https://github.com/other",
+			wantRules: []rewriteRule{
+				{from: "https://forge.example.com/", to: "https://github.com/"},
+				{from: "https://other.example.com/", to: "https://github.com/other"},
+			},
+		},
+		{
+			name:       "Rules with spaces",
+			inputRules: "https://a.example/=https://b.example/, https://c.example/=https://d.example/",
+			wantRules: []rewriteRule{
+				{from: "https://a.example/", to: "https://b.example/"},
+				{from: "https://c.example/", to: "https://d.example/"},
+			},
+		},
+		{
+			name:       "Rules with blank middle",
+			inputRules: "https://a.example/=https://b.example/,,https://c.example/=https://d.example/",
+			wantRules: []rewriteRule{
+				{from: "https://a.example/", to: "https://b.example/"},
+				{from: "https://c.example/", to: "https://d.example/"},
+			},
+		},
+		{
+			name:       "Rule without separator",
+			inputRules: "https://a.example/",
+			wantRules:  []rewriteRule{},
+		},
+		{
+			name:       "Rule with empty source",
+			inputRules: "=https://b.example/",
+			wantRules:  []rewriteRule{},
+		},
+		{
+			name:       "Rule with empty target",
+			inputRules: "https://a.example/=",
+			wantRules:  []rewriteRule{},
+		},
+		{
+			name:       "Rule with equals in target",
+			inputRules: "https://a.example/=https://b.example/?x=1",
+			wantRules:  []rewriteRule{{from: "https://a.example/", to: "https://b.example/?x=1"}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotRules := parseRewriteRules(tt.inputRules); !reflect.DeepEqual(gotRules, tt.wantRules) {
+				t.Errorf("parseRewriteRules() = %#+v, want %#+v", gotRules, tt.wantRules)
+			}
+		})
+	}
+}
+
 func Test_parseSignatureHeader(t *testing.T) {
 	tests := []struct {
 		name        string

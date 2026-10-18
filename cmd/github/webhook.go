@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"slices"
+	"strings"
 )
 
 type messageSender interface {
@@ -15,6 +16,7 @@ type githubWebhookHandler struct {
 	sender         messageSender
 	hookSender     string
 	ignoredSenders []string
+	rewriteRules   []rewriteRule
 }
 
 func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte) error {
@@ -194,5 +196,15 @@ func (g *githubWebhookHandler) sendMessage(isPrivate bool, messages ...string) e
 	if isPrivate && len(*PrivateChannel) != 0 {
 		notifyChannel = *PrivateChannel
 	}
+	for i := range messages {
+		messages[i] = rewriteMessage(g.rewriteRules, messages[i])
+	}
 	return g.sender.SendChannelMessage(notifyChannel, messages...)
+}
+
+func rewriteMessage(rules []rewriteRule, message string) string {
+	for _, rule := range rules {
+		message = strings.ReplaceAll(message, rule.from, rule.to)
+	}
+	return message
 }

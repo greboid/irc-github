@@ -30,6 +30,7 @@ func handleForgejo(request *rpc.HttpRequest) *rpc.HttpResponse {
 			gh: &githubWebhookHandler{
 				sender:         helper,
 				ignoredSenders: parseIgnoredUsers(*IgnoredUsers),
+				rewriteRules:   parseRewriteRules(*RewriteLinks),
 			},
 		}
 		err := webhookHandler.handleWebhook(eventType, request.Body)

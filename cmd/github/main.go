@@ -28,6 +28,7 @@ var (
 	GithubSecret   = flag.String("github-secret", "", "Github secret for validating webhooks")
 	ForgejoSecret  = flag.String("forgejo-secret", "", "Forgejo secret for validating webhooks")
 	IgnoredUsers   = flag.String("ignored-users", "", "Comma separated list of users to ignore")
+	RewriteLinks   = flag.String("rewrite-links", "", "Comma separated link rewrite rules in from=to format")
 	helper         *plugins.PluginHelper
 )
 
@@ -81,6 +82,7 @@ func handleGithub(request *rpc.HttpRequest) *rpc.HttpResponse {
 		webhookHandler := githubWebhookHandler{
 			sender:         helper,
 			ignoredSenders: parseIgnoredUsers(*IgnoredUsers),
+			rewriteRules:   parseRewriteRules(*RewriteLinks),
 		}
 		err := webhookHandler.handleWebhook(eventType, request.Body)
 		if err != nil {
@@ -119,4 +121,26 @@ func parseIgnoredUsers(users string) []string {
 		}
 	}
 	return ignoredUsers
+}
+
+type rewriteRule struct {
+	from string
+	to   string
+}
+
+func parseRewriteRules(rules string) []rewriteRule {
+	rewriteRules := make([]rewriteRule, 0)
+	splitRules := strings.SplitSeq(rules, ",")
+	for rule := range splitRules {
+		trimmedRule := strings.TrimSpace(rule)
+		if trimmedRule == "" {
+			continue
+		}
+		from, to, _ := strings.Cut(trimmedRule, "=")
+		if from == "" || to == "" {
+			continue
+		}
+		rewriteRules = append(rewriteRules, rewriteRule{from: from, to: to})
+	}
+	return rewriteRules
 }
