@@ -21,6 +21,11 @@ type webhook struct {
 	CheckRun    CheckRun    `json:"check_run"`
 	CheckSuite  CheckSuite  `json:"check_suite"`
 	Package     *Package    `json:"package"`
+	State       string      `json:"state"`
+	Context     string      `json:"context"`
+	TargetURL   string      `json:"target_url"`
+	Run         WorkflowRun `json:"run"`
+	Job         WorkflowJob `json:"job"`
 }
 
 // compareLink covers github's "compare" and forgejo's "compare_url".
@@ -29,6 +34,22 @@ func (w *webhook) compareLink() string {
 		return w.CompareLink
 	}
 	return w.CompareURL
+}
+
+// repo covers forgejo workflow payloads, which nest the repository in run.
+func (w *webhook) repo() Repository {
+	if w.Repository.FullName != "" {
+		return w.Repository
+	}
+	return w.Run.Repository
+}
+
+// senderLogin covers forgejo workflow payloads, which have no sender.
+func (w *webhook) senderLogin() string {
+	if w.Sender.Login != "" {
+		return w.Sender.Login
+	}
+	return w.Run.TriggerUser.Login
 }
 
 type Repository struct {
@@ -94,6 +115,21 @@ type CheckSuite struct {
 
 type App struct {
 	Name string `json:"name"`
+}
+
+type WorkflowRun struct {
+	WorkflowID  string     `json:"workflow_id"`
+	PrettyRef   string     `json:"prettyref"`
+	Status      string     `json:"status"`
+	HtmlURL     string     `json:"html_url"`
+	Repository  Repository `json:"repository"`
+	TriggerUser User       `json:"trigger_user"`
+}
+
+type WorkflowJob struct {
+	Name    string `json:"name"`
+	Status  string `json:"status"`
+	HtmlURL string `json:"html_url"`
 }
 
 type Pusher struct {

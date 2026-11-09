@@ -79,6 +79,11 @@ var forgejoEventHandlers = map[string]func(webhook) []string{
 	"create":        (&githubCreateHandler{}).handleCreateEvent,
 	"delete":        handleForgejoDeleteEvent,
 	"package":       (&githubPackageHandler{}).handlePackageEvent,
+
+	"workflow_run_failure":   handleForgejoWorkflowRunEvent,
+	"workflow_run_cancelled": handleForgejoWorkflowRunEvent,
+	"workflow_job_failure":   handleForgejoWorkflowJobEvent,
+	"workflow_job_cancelled": handleForgejoWorkflowJobEvent,
 }
 
 func handleForgejoDeleteEvent(data webhook) (messages []string) {
@@ -109,8 +114,8 @@ func (f *forgejoWebhookHandler) handleWebhook(eventType string, bodyBytes []byte
 	if err := json.Unmarshal(bodyBytes, &data); err != nil {
 		return err
 	}
-	f.gh.hookSender = data.Sender.Login
-	if err := f.gh.sendMessage(data.Repository.IsPrivate, handler(data)...); err != nil {
+	f.gh.hookSender = data.senderLogin()
+	if err := f.gh.sendMessage(data.repo().IsPrivate, handler(data)...); err != nil {
 		slog.Error("Error handling forgejo event", slog.Any("event", eventType), slog.Any("error", err))
 	}
 	return nil

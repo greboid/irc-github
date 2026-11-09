@@ -226,6 +226,38 @@ func Test_forgejoWebhookHandler_handleWebhook(t *testing.T) {
 			output:    0,
 		},
 		{
+			name:      "valid workflow_run_failure",
+			eventType: "workflow_run_failure",
+			filename:  "forgejo/workflowrun/failure_1.json",
+			client:    &mockIRCPluginClient{},
+			err:       false,
+			output:    1,
+		},
+		{
+			name:      "error workflow_run_failure",
+			eventType: "workflow_run_failure",
+			filename:  "",
+			client:    &mockIRCPluginClient{},
+			err:       true,
+			output:    0,
+		},
+		{
+			name:      "valid workflow_job_failure",
+			eventType: "workflow_job_failure",
+			filename:  "forgejo/workflowjob/failure_1.json",
+			client:    &mockIRCPluginClient{},
+			err:       false,
+			output:    1,
+		},
+		{
+			name:      "successful workflow run ignored",
+			eventType: "workflow_run_success",
+			filename:  "forgejo/workflowrun/failure_1.json",
+			client:    &mockIRCPluginClient{},
+			err:       false,
+			output:    0,
+		},
+		{
 			name:      "unknown event",
 			eventType: "repository",
 			filename:  "forgejo/create/branch_1.json",
@@ -272,6 +304,26 @@ func Test_forgejoWebhookHandler_sendMessageError(t *testing.T) {
 	}
 }
 
+func Test_forgejoWebhookHandler_workflowUsesRunRepositoryAndTriggerUser(t *testing.T) {
+	originalChannel, originalPrivate := *Channel, *PrivateChannel
+	t.Cleanup(func() { *Channel, *PrivateChannel = originalChannel, originalPrivate })
+	*Channel, *PrivateChannel = "#public", "#private"
+	body := []byte(`{"action":"run_completed","run":{"workflow_id":"build.yml","prettyref":"main","status":"failure",` +
+		`"html_url":"https://forgejo.example/user/repo/actions/runs/1",` +
+		`"repository":{"full_name":"user/repo","private":true},"trigger_user":{"login":"testuser"}}}`)
+	client := &mockIRCPluginClient{finished: make(chan bool, 1)}
+	g := &forgejoWebhookHandler{gh: &githubWebhookHandler{sender: client}}
+	if err := g.handleWebhook("workflow_run_failure", body); err != nil {
+		t.Fatalf("handleWebhook() error = %v", err)
+	}
+	if g.gh.hookSender != "testuser" {
+		t.Errorf("hookSender = %q, want testuser", g.gh.hookSender)
+	}
+	if client.lastChannel != "#private" {
+		t.Errorf("channel = %q, want #private", client.lastChannel)
+	}
+}
+
 func Test_forgejo_eventMessages(t *testing.T) {
 	tests := []struct {
 		eventType string
@@ -289,6 +341,8 @@ func Test_forgejo_eventMessages(t *testing.T) {
 		{eventType: "delete", filename: "forgejo/delete/branch_1.json"},
 		{eventType: "package", filename: "forgejo/packages/container_1.json"},
 		{eventType: "package", filename: "forgejo/packages/deleted_1.json"},
+		{eventType: "workflow_run_failure", filename: "forgejo/workflowrun/failure_1.json"},
+		{eventType: "workflow_job_failure", filename: "forgejo/workflowjob/failure_1.json"},
 	}
 	gold := goldie.New(t)
 	for _, tt := range tests {

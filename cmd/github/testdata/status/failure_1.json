@@ -1,0 +1,32 @@
+{
+  "id": 6805126730,
+  "sha": "d6f5c4b2f2b6c8e0f0d0c0b0a090807060504030",
+  "name": "greboid/irc",
+  "target_url": "https://ci.example.com/greboid/irc/builds/42",
+  "context": "continuous-integration/example",
+  "description": "The build failed",
+  "state": "failure",
+  "branches": [
+    {
+      "name": "master",
+      "commit": {
+        "sha": "d6f5c4b2f2b6c8e0f0d0c0b0a090807060504030",
+        "url": "https://api.github.com/repos/greboid/irc/commits/d6f5c4b2f2b6c8e0f0d0c0b0a090807060504030"
+      }
+    }
+  ],
+  "created_at": "2020-03-21T16:55:11+00:00",
+  "updated_at": "2020-03-21T16:55:11+00:00",
+  "repository": {
+    "id": 243344149,
+    "name": "irc",
+    "full_name": "greboid/irc",
+    "private": false,
+    "html_url": "https://github.com/greboid/irc"
+  },
+  "sender": {
+    "login": "greboid",
+    "id": 189618,
+    "type": "User"
+  }
+}

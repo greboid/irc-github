@@ -180,6 +180,22 @@ func (g *githubWebhookHandler) handleWebhook(eventType string, bodyBytes []byte)
 			slog.Error("Error handling check suite", slog.Any("error", err))
 			return err
 		}
+	case "status":
+		data := webhook{}
+		handler := githubStatusHandler{}
+		err := json.Unmarshal(bodyBytes, &data)
+		if err == nil {
+			go func() {
+				g.hookSender = data.Sender.Login
+				err := g.sendMessage(data.Repository.IsPrivate, handler.handleStatusEvent(data)...)
+				if err != nil {
+					slog.Error("Error handling status", slog.Any("error", err))
+				}
+			}()
+		} else {
+			slog.Error("Error handling status", slog.Any("error", err))
+			return err
+		}
 	}
 	return nil
 }

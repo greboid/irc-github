@@ -1,0 +1,39 @@
+{
+  "action": "job_completed",
+  "job": {
+    "id": 900,
+    "run_id": 512,
+    "attempt": 1,
+    "handle": "test",
+    "repo_id": 7,
+    "owner_id": 1,
+    "name": "test",
+    "html_url": "https://forgejo.example/user/repo/actions/runs/42/jobs/0/attempt/1",
+    "needs": [],
+    "runs_on": ["docker"],
+    "task_id": 1200,
+    "status": "failure"
+  },
+  "run": {
+    "id": 512,
+    "title": "Update README",
+    "repository": {
+      "id": 7,
+      "full_name": "user/repo",
+      "private": false,
+      "html_url": "https://forgejo.example/user/repo"
+    },
+    "workflow_id": "build.yml",
+    "index_in_repo": 42,
+    "trigger_user": {
+      "id": 1,
+      "login": "testuser"
+    },
+    "prettyref": "main",
+    "commit_sha": "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+    "event": "push",
+    "trigger_event": "push",
+    "status": "running",
+    "html_url": "https://forgejo.example/user/repo/actions/runs/42"
+  }
+}

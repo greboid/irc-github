@@ -199,6 +199,27 @@ func Test_githubWebhookHandler_handleWebhook(t *testing.T) {
 			err:    true,
 			output: 0,
 		},
+		{
+			name:     "valid status",
+			finished: make(chan bool, 1),
+			client:   &mockIRCPluginClient{},
+			args: args{
+				eventType: "status",
+				filename:  "status/failure_1.json",
+			},
+			err:    false,
+			output: 1,
+		},
+		{
+			name:   "error status",
+			client: &mockIRCPluginClient{},
+			args: args{
+				eventType: "status",
+				filename:  "",
+			},
+			err:    true,
+			output: 0,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -17,9 +17,12 @@ Optionally you can hide any notifications about private channels, or send them t
 Once configured the URL to configure in github would be <Bot URL>/github
 
 For Forgejo, also set a forgejo secret (GITEA_* headers are also accepted, so this works for Gitea
- too).  The URL to configure in forgejo would be <Bot URL>/forgejo.  Note that Forgejo does not send
- check run or check suite notifications, and that a single deployment sends both github and forgejo
- notifications to the same channel.
+ too).  The URL to configure in forgejo would be <Bot URL>/forgejo.  Note that a single deployment
+ sends both github and forgejo notifications to the same channel.
+
+Failed or cancelled status checks are announced; successes are not.  On github enable the check run,
+ check suite and status events.  On forgejo 17 or later enable the workflow run and workflow job
+ failure and cancelled events.
 
 Links in the notifications can be rewritten, for example to point from a private forgejo instance
  to its public github mirror.  Rules are comma separated in from=to format and applied in order to

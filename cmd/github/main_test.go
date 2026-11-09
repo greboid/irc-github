@@ -28,10 +28,12 @@ type mockIRCPluginClient struct {
 	sentRawMessages     int
 	sentChannelMessages int
 	finished            chan bool
+	lastChannel         string
 }
 
-func (m *mockIRCPluginClient) SendChannelMessage(_ string, _ ...string) error {
+func (m *mockIRCPluginClient) SendChannelMessage(channel string, _ ...string) error {
 	m.sentChannelMessages++
+	m.lastChannel = channel
 	m.finished <- true
 	return nil
 }
